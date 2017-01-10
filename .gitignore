@@ -1,4 +1,7 @@
 node_modules
 *.swp
 *.log
-youdao.js
+dist
+public
+coverage
+quan.js

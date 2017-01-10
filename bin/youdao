@@ -1,0 +1,43 @@
+#!/usr/bin/env node
+const http = require('http');
+const querystring = require('querystring');
+const fp = require('lodash/fp');
+
+const HOST = 'fanyi.youdao.com';
+const PATH = '/openapi.do';
+const PARAMS = {
+  keyfrom: 'vimvim',
+  key: '816393792',
+  type: 'data',
+  doctype: 'json',
+  version: '1.1',
+};
+
+const translate = (str = '') =>
+  new Promise((resolve, reject) => {
+    const req = http.request({
+      method: 'GET',
+      hostname: HOST,
+      path: `${PATH}?${querystring.stringify(PARAMS)}&q=${encodeURIComponent(str)}`,
+    }, (res) => {
+      const chunks = [];
+      res.on('data', (chunk) => chunks.push(chunk));
+
+      res.on('end', () => resolve(JSON.parse(Buffer.concat(chunks))));
+
+      res.on('error', reject);
+    });
+    req.end();
+  });
+
+translate(process.argv[2])
+  .then(fp.get('basic.explains'))
+  .then((response) => {
+    console.log('##################################');
+    if (response && Array.isArray(response)) {
+      response.forEach(item => {
+        console.log(`# ${item}`);
+      });
+    }
+    console.log('##################################');
+  });

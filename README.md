@@ -2,9 +2,7 @@
 
 ```
 npm install
-npm run build
-sudo mv ./youdao.js /usr/local/bin/youdao
-sudo chmod +x /usr/local/bin/youdao
+npm link
 ```
 
 ## Usage
