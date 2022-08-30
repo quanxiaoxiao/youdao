@@ -1,7 +1,6 @@
 #!/usr/bin/env node
-const http = require('http');
-const querystring = require('querystring');
-const fp = require('lodash/fp');
+import https from 'node:https';
+import querystring from 'node:querystring';
 
 const HOST = 'fanyi.youdao.com';
 const PATH = '/openapi.do';
@@ -15,29 +14,31 @@ const PARAMS = {
 
 const translate = (str = '') =>
   new Promise((resolve, reject) => {
-    const req = http.request({
+    const req = https.request({
       method: 'GET',
       hostname: HOST,
-      path: `${PATH}?${querystring.stringify(PARAMS)}&q=${encodeURIComponent(str)}`,
+      path: `${PATH}?${querystring.stringify({
+        ...PARAMS,
+        q: str,
+      })}`,
     }, (res) => {
       const chunks = [];
       res.on('data', (chunk) => chunks.push(chunk));
-
       res.on('end', () => resolve(JSON.parse(Buffer.concat(chunks))));
-
       res.on('error', reject);
     });
     req.end();
   });
 
 translate(process.argv[2])
-  .then(fp.get('basic.explains'))
-  .then((response) => {
-    console.log('##################################');
-    if (response && Array.isArray(response)) {
-      response.forEach(item => {
-        console.log(`# ${item}`);
+  .then((ret) => ret && ret.basic && ret.basic.explains)
+  .then((ret) => {
+    const line = '##################################\n';
+    process.stdout.write(line);
+    if (Array.isArray(ret)) {
+      ret.forEach(item => {
+        process.stdout.write(`# ${item}\n`);
       });
     }
-    console.log('##################################');
+    process.stdout.write(line);
   });

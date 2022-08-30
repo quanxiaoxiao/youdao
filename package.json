@@ -3,10 +3,9 @@
   "version": "1.0.0",
   "main": "bin/youdao",
   "license": "MIT",
+  "type": "module",
   "bin": {
-    "youdao": "./bin/youdao"
+    "youdao": "./bin/youdao.mjs"
   },
-  "dependencies": {
-    "lodash": "^4.17.15"
-  }
+  "dependencies": {}
 }
