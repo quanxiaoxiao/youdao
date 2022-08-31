@@ -2,7 +2,7 @@
 import https from 'node:https';
 import querystring from 'node:querystring';
 
-const HOST = 'fanyi.youdao.com';
+const HOSTNAME = 'fanyi.youdao.com';
 const PATH = '/openapi.do';
 const PARAMS = {
   keyfrom: 'vimvim',
@@ -15,12 +15,15 @@ const PARAMS = {
 const translate = (str = '') =>
   new Promise((resolve, reject) => {
     const req = https.request({
+      hostname: '123.123.219.80',
       method: 'GET',
-      hostname: HOST,
       path: `${PATH}?${querystring.stringify({
         ...PARAMS,
         q: str,
       })}`,
+      headers: {
+        host: HOSTNAME,
+      },
     }, (res) => {
       const chunks = [];
       res.on('data', (chunk) => chunks.push(chunk));
