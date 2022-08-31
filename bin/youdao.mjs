@@ -2,6 +2,7 @@
 import https from 'node:https';
 import querystring from 'node:querystring';
 
+const REMOTE_ADDRESS = '123.123.219.80';
 const HOSTNAME = 'fanyi.youdao.com';
 const PATH = '/openapi.do';
 const PARAMS = {
@@ -15,7 +16,7 @@ const PARAMS = {
 const translate = (str = '') =>
   new Promise((resolve, reject) => {
     const req = https.request({
-      hostname: '123.123.219.80',
+      hostname: REMOTE_ADDRESS,
       method: 'GET',
       path: `${PATH}?${querystring.stringify({
         ...PARAMS,
