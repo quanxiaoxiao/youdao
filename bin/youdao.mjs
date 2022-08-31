@@ -15,23 +15,27 @@ const PARAMS = {
 
 const translate = (str = '') =>
   new Promise((resolve, reject) => {
-    const req = https.request({
-      hostname: REMOTE_ADDRESS,
-      method: 'GET',
-      path: `${PATH}?${querystring.stringify({
-        ...PARAMS,
-        q: str,
-      })}`,
-      headers: {
-        host: HOSTNAME,
-      },
-    }, (res) => {
-      const chunks = [];
-      res.on('data', (chunk) => chunks.push(chunk));
-      res.on('end', () => resolve(JSON.parse(Buffer.concat(chunks))));
-      res.on('error', reject);
-    });
-    req.end();
+    if (!str) {
+      reject();
+    } else {
+      const req = https.request({
+        hostname: REMOTE_ADDRESS,
+        method: 'GET',
+        path: `${PATH}?${querystring.stringify({
+          ...PARAMS,
+          q: str,
+        })}`,
+        headers: {
+          host: HOSTNAME,
+        },
+      }, (res) => {
+        const chunks = [];
+        res.on('data', (chunk) => chunks.push(chunk));
+        res.on('end', () => resolve(JSON.parse(Buffer.concat(chunks))));
+        res.on('error', reject);
+      });
+      req.end();
+    }
   });
 
 translate(process.argv[2])
@@ -45,4 +49,9 @@ translate(process.argv[2])
       });
     }
     process.stdout.write(line);
+  })
+  .catch((error) => {
+    if (error) {
+      process.stderr.write(error.message);
+    }
   });
